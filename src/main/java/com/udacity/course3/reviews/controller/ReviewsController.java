@@ -15,8 +15,6 @@ import java.util.List;
  */
 @RestController
 public class ReviewsController {
-
-    // TODO: Wire JPA repositories here
     @Autowired
     ReviewsRepository reviewsRepository;
 

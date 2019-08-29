@@ -1,5 +1,8 @@
 package com.udacity.course3.reviews.controller;
 
+import com.udacity.course3.reviews.entity.Comment;
+import com.udacity.course3.reviews.repository.CommentsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/comments")
 public class CommentsController {
-
-    // TODO: Wire needed JPA repositories here
+    @Autowired
+    CommentsRepository commentsRepository;
 
     /**
      * Creates a comment for a review.
@@ -27,8 +30,12 @@ public class CommentsController {
      * @param reviewId The id of the review.
      */
     @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.POST)
-    public ResponseEntity<?> createCommentForReview(@PathVariable("reviewId") Integer reviewId) {
-        throw new HttpServerErrorException(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<Comment> createCommentForReview(@PathVariable("reviewId") Integer reviewId, @RequestBody Comment comment) {
+        comment.setReviewsId(new Long(reviewId));
+
+        Comment newComment = this.commentsRepository.save(comment);
+
+        return new ResponseEntity<>(newComment, HttpStatus.CREATED);
     }
 
     /**
@@ -41,7 +48,9 @@ public class CommentsController {
      * @param reviewId The id of the review.
      */
     @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.GET)
-    public List<?> listCommentsForReview(@PathVariable("reviewId") Integer reviewId) {
-        throw new HttpServerErrorException(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<List<Comment>> listCommentsForReview(@PathVariable("reviewId") Integer reviewId) {
+        List<Comment> comments = this.commentsRepository.findAllByReviewsId(new Long(reviewId));
+
+        return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 }
