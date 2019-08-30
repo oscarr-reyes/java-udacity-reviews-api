@@ -11,15 +11,11 @@ public class Comment {
 
 	private String text;
 
-	@Column(name = "reviews_id")
-	private Long reviewsId;
+	@ManyToOne
+	@JoinColumn(name = "reviews_id")
+	private Review review;
 
 	public Comment() {
-	}
-
-	public Comment(String text, Long reviewsId) {
-		this.text = text;
-		this.reviewsId = reviewsId;
 	}
 
 	public Long getId() {
@@ -38,11 +34,11 @@ public class Comment {
 		this.text = text;
 	}
 
-	public Long getReviewsId() {
-		return reviewsId;
+	public Review getReview() {
+		return review;
 	}
 
-	public void setReviewsId(Long reviewsId) {
-		this.reviewsId = reviewsId;
+	public void setReview(Review review) {
+		this.review = review;
 	}
 }
