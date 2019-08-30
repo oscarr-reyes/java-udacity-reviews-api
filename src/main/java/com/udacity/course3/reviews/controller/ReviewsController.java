@@ -1,6 +1,8 @@
 package com.udacity.course3.reviews.controller;
 
+import com.udacity.course3.reviews.entity.Product;
 import com.udacity.course3.reviews.entity.Review;
+import com.udacity.course3.reviews.repository.ProductsRepository;
 import com.udacity.course3.reviews.repository.ReviewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,14 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring REST controller for working with review entity.
  */
 @RestController
 public class ReviewsController {
-    @Autowired
-    ReviewsRepository reviewsRepository;
+    private final ReviewsRepository reviewsRepository;
+    private final ProductsRepository productsRepository;
+
+    public ReviewsController(ReviewsRepository reviewsRepository, ProductsRepository productsRepository) {
+        this.reviewsRepository = reviewsRepository;
+        this.productsRepository = productsRepository;
+    }
 
     /**
      * Creates a review for a product.
@@ -31,11 +39,17 @@ public class ReviewsController {
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.POST)
     public ResponseEntity<Review> createReviewForProduct(@PathVariable("productId") Integer productId, @RequestBody Review review) {
-        review.setProductsId(new Long(productId));
+        Optional<Product> productRecord = this.productsRepository.findById(new Long(productId));
 
-        Review newReview = this.reviewsRepository.save(review);
+        if(!productRecord.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            review.setProduct(productRecord.get());
 
-        return new ResponseEntity<>(newReview, HttpStatus.CREATED);
+            Review newReview = this.reviewsRepository.save(review);
+
+            return new ResponseEntity<>(newReview, HttpStatus.CREATED);
+        }
     }
 
     /**
@@ -46,7 +60,11 @@ public class ReviewsController {
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
     public ResponseEntity<List<Review>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
-        List<Review> reviews = this.reviewsRepository.findAllByProductsId(new Long(productId));
+        Product product = new Product();
+
+        product.setId(new Long(productId));
+
+        List<Review> reviews = this.reviewsRepository.findAllByProduct(product);
 
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }

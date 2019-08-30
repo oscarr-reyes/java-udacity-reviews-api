@@ -11,15 +11,16 @@ public class Review {
 
 	private String text;
 
-	@Column(name = "products_id")
-	private Long productsId;
+	@ManyToOne
+	@JoinColumn(name = "products_id")
+	private Product product;
 
 	public Review() {
 	}
 
-	public Review(String text, Long productsId) {
+	public Review(String text, Product product) {
 		this.text = text;
-		this.productsId = productsId;
+		this.product = product;
 	}
 
 	public Long getId() {
@@ -38,11 +39,11 @@ public class Review {
 		this.text = text;
 	}
 
-	public Long getProductsId() {
-		return productsId;
+	public Product getProduct() {
+		return product;
 	}
 
-	public void setProductsId(Long productsId) {
-		this.productsId = productsId;
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 }
