@@ -1,24 +1,25 @@
-# Reviews API 
-Supports operations for writing reviews and listing reviews for a product but with no sorting or filtering.
+# Reviews API project
+Reviews API project for Udacity java nanodegree course
 
-### Prerequisites
-MySQL needs to be installed and configured. Instructions provided separately.
+# Requirements
+* Java 11
+* Maven
 
-### Getting Started
-* Configure the MySQL Datasource in application.properties.
-* Add Flyway scripts in src/main/resources/db/migration.
-* Define JPA Entities and relationships.
-* Define Spring Data JPA Repositories.
-* Add tests for JPA Repositories.
+# How to run
+It is required to have MySQL installed on the system, you can change the connection settings in `application.properties` inside resources
 
-### Reference Documentation
-For further reference, please consider the following sections:
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
+```shell script
+# Compile the application
+$ mvn clean package
 
-### Guides
-The following guides illustrate how to use some features concretely:
+# Run the application
+# Make sure the database is running before running the application
+$ java -jar target/reviews-0.0.1-SNAPSHOT.jar
+```
 
-* [Accessing JPA Data with REST](https://spring.io/guides/gs/accessing-data-rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
+# Test
+
+```shell script
+$ mvn test
+```
