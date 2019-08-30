@@ -18,6 +18,11 @@ public class Comment {
 	public Comment() {
 	}
 
+	public Comment(String text, Review review) {
+		this.text = text;
+		this.review = review;
+	}
+
 	public Long getId() {
 		return id;
 	}

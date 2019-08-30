@@ -1,6 +1,7 @@
 package com.udacity.course3.reviews.repository;
 
 import com.udacity.course3.reviews.entity.Product;
+import com.udacity.course3.reviews.entity.Review;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,26 +17,30 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class ProductsRepositoryTest {
+public class ReviewsRepositoryTest {
 	@Autowired
 	private EntityManager entityManager;
 	@Autowired
-	private ProductsRepository productsRepository;
+	private ReviewsRepository reviewsRepository;
 
 	@Test
-	public void should_make_injected_components_work() {
+	public void should_make_inject_components_work() {
 		Assert.assertNotNull(this.entityManager);
-		Assert.assertNotNull(this.productsRepository);
+		Assert.assertNotNull(this.reviewsRepository);
 	}
 
 	@Test
-	public void should_find_all_products() {
-		Product product = new Product("foo", "bar");
+	public void should_find_reviews_by_products() {
+		Product mockProduct = new Product("foo", "bar");
 
-		this.entityManager.persist(product);
+		Review mockReview = new Review("qux", mockProduct);
 
-		List<Product> products = this.productsRepository.findAll();
+		this.entityManager.persist(mockProduct);
+		this.entityManager.persist(mockReview);
+		this.entityManager.flush();
 
-		Assert.assertThat(products, not(empty()));
+		List<Review> reviews = this.reviewsRepository.findAllByProduct(mockProduct);
+
+		Assert.assertThat(reviews, not(empty()));
 	}
 }
