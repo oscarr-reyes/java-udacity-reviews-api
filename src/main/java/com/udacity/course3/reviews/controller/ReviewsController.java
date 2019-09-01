@@ -1,14 +1,13 @@
 package com.udacity.course3.reviews.controller;
 
+import com.udacity.course3.reviews.document.Review;
 import com.udacity.course3.reviews.entity.Product;
-import com.udacity.course3.reviews.entity.Review;
 import com.udacity.course3.reviews.repository.ProductsRepository;
 import com.udacity.course3.reviews.repository.ReviewsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.udacity.course3.reviews.service.ReviewsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,12 +17,12 @@ import java.util.Optional;
  */
 @RestController
 public class ReviewsController {
-    private final ReviewsRepository reviewsRepository;
     private final ProductsRepository productsRepository;
+    private final ReviewsService reviewsService;
 
-    public ReviewsController(ReviewsRepository reviewsRepository, ProductsRepository productsRepository) {
-        this.reviewsRepository = reviewsRepository;
+    public ReviewsController(ProductsRepository productsRepository, ReviewsService reviewsService) {
         this.productsRepository = productsRepository;
+        this.reviewsService = reviewsService;
     }
 
     /**
@@ -44,9 +43,9 @@ public class ReviewsController {
         if(!productRecord.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            review.setProduct(productRecord.get());
+            review.setProductId(new Long(productId));
 
-            Review newReview = this.reviewsRepository.save(review);
+            Review newReview = this.reviewsService.save(review);
 
             return new ResponseEntity<>(newReview, HttpStatus.CREATED);
         }
@@ -60,11 +59,7 @@ public class ReviewsController {
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
     public ResponseEntity<List<Review>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
-        Product product = new Product();
-
-        product.setId(new Long(productId));
-
-        List<Review> reviews = this.reviewsRepository.findAllByProduct(product);
+        List<Review> reviews = this.reviewsService.findAll(new Long(productId));
 
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
