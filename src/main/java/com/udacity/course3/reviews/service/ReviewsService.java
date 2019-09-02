@@ -44,6 +44,11 @@ public class ReviewsService {
 			.collect(Collectors.toList());
 	}
 
+	/**
+	 * Saves a review instance in both MySQL and MongoDB
+	 * @param review The review object to persist
+	 * @return The newly created review instance
+	 */
 	public Review save(Review review) {
 		ReviewDocument reviewDocument = new ReviewDocument(review.getProduct().getId(), review.getText());
 		Review newReview = this.reviewsRepository.save(review);
@@ -55,6 +60,11 @@ public class ReviewsService {
 		return newReview;
 	}
 
+	/**
+	 * Saves a comment instance in both MySQL and MongoDB
+	 * @param comment The comment object to persist
+	 * @return The newly created comment instance
+	 */
 	public Comment saveComment(Comment comment) {
 		Review review = comment.getReview();
 		ReviewDocument reviewDocument = this.reviewsMongoRepository.findByMysqlId(review.getId());
