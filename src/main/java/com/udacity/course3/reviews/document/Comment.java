@@ -3,6 +3,9 @@ package com.udacity.course3.reviews.document;
 public class Comment {
 	private String text;
 
+	public Comment() {
+	}
+
 	public Comment(String text) {
 		this.text = text;
 	}

@@ -1,14 +1,11 @@
 package com.udacity.course3.reviews.controller;
 
-import com.udacity.course3.reviews.entity.Comment;
-import com.udacity.course3.reviews.entity.Review;
-import com.udacity.course3.reviews.repository.CommentsRepository;
-import com.udacity.course3.reviews.repository.ReviewsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.udacity.course3.reviews.document.Comment;
+import com.udacity.course3.reviews.document.Review;
+import com.udacity.course3.reviews.repository.ReviewsMongoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,59 +16,59 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/comments")
 public class CommentsController {
-    private final CommentsRepository commentsRepository;
+	private final ReviewsMongoRepository reviewsMongoRepository;
 
-    private final ReviewsRepository reviewsRepository;
+	public CommentsController(ReviewsMongoRepository reviewsMongoRepository) {
+		this.reviewsMongoRepository = reviewsMongoRepository;
+	}
 
-    public CommentsController(CommentsRepository commentsRepository, ReviewsRepository reviewsRepository) {
-        this.commentsRepository = commentsRepository;
-        this.reviewsRepository = reviewsRepository;
-    }
+	/**
+	 * Creates a comment for a review.
+	 * <p>
+	 * 1. Add argument for comment entity. Use {@link RequestBody} annotation.
+	 * 2. Check for existence of review.
+	 * 3. If review not found, return NOT_FOUND.
+	 * 4. If found, save comment.
+	 *
+	 * @param reviewId The id of the review.
+	 */
+	@RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.POST)
+	public ResponseEntity<Comment> createCommentForReview(@PathVariable("reviewId") String reviewId, @RequestBody Comment comment) {
+        Optional<Review> record = this.reviewsMongoRepository.findById(reviewId);
 
-    /**
-     * Creates a comment for a review.
-     *
-     * 1. Add argument for comment entity. Use {@link RequestBody} annotation.
-     * 2. Check for existence of review.
-     * 3. If review not found, return NOT_FOUND.
-     * 4. If found, save comment.
-     *
-     * @param reviewId The id of the review.
-     */
-    @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.POST)
-    public ResponseEntity<Comment> createCommentForReview(@PathVariable("reviewId") Integer reviewId, @RequestBody Comment comment) {
-        Optional<Review> recordReview = this.reviewsRepository.findById(new Long(reviewId));
-
-        if (!recordReview.isPresent()) {
+        if (!record.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            comment.setReview(recordReview.get());
+            Review review = record.get();
 
-            Comment newComment = this.commentsRepository.save(comment);
+            review.addComment(comment);
 
-            return new ResponseEntity<>(newComment, HttpStatus.CREATED);
+            this.reviewsMongoRepository.save(review);
+
+            return new ResponseEntity<>(comment, HttpStatus.CREATED);
         }
-    }
+	}
 
-    /**
-     * List comments for a review.
-     *
-     * 2. Check for existence of review.
-     * 3. If review not found, return NOT_FOUND.
-     * 4. If found, return list of comments.
-     *
-     * @param reviewId The id of the review.
-     */
-    @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.GET)
-    public ResponseEntity<List<Comment>> listCommentsForReview(@PathVariable("reviewId") Integer reviewId) {
-        Optional<Review> recordReview = this.reviewsRepository.findById(new Long(reviewId));
+	/**
+	 * List comments for a review.
+	 * <p>
+	 * 2. Check for existence of review.
+	 * 3. If review not found, return NOT_FOUND.
+	 * 4. If found, return list of comments.
+	 *
+	 * @param reviewId The id of the review.
+	 */
+	@RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.GET)
+	public ResponseEntity<List<Comment>> listCommentsForReview(@PathVariable("reviewId") String reviewId) {
+		Optional<Review> record = this.reviewsMongoRepository.findById(reviewId);
 
-        if (!recordReview.isPresent()) {
+        if (!record.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            List<Comment> comments = this.commentsRepository.findAllByReview(recordReview.get());
+            Review review = record.get();
+            List<Comment> comments = review.getComments();
 
             return new ResponseEntity<>(comments, HttpStatus.OK);
         }
-    }
+	}
 }
