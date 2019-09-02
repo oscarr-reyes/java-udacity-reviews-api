@@ -1,6 +1,7 @@
 package com.udacity.course3.reviews.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "reviews")
@@ -9,6 +10,7 @@ public class Review {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotNull
 	private String text;
 
 	@ManyToOne

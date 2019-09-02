@@ -1,12 +1,10 @@
 package com.udacity.course3.reviews.repository;
 
-import com.udacity.course3.reviews.document.Review;
+import com.udacity.course3.reviews.document.ReviewDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface ReviewsMongoRepository extends MongoRepository<Review, String> {
-	public List<Review> findAllByProductId(Long id);
+public interface ReviewsMongoRepository extends MongoRepository<ReviewDocument, String> {
+	public ReviewDocument findByMysqlId(Long mysqlId);
 }

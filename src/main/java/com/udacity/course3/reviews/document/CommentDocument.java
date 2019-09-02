@@ -1,12 +1,12 @@
 package com.udacity.course3.reviews.document;
 
-public class Comment {
+public class CommentDocument {
 	private String text;
 
-	public Comment() {
+	public CommentDocument() {
 	}
 
-	public Comment(String text) {
+	public CommentDocument(String text) {
 		this.text = text;
 	}
 

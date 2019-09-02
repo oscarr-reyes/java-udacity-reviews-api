@@ -1,9 +1,9 @@
 package com.udacity.course3.reviews.controller;
 
-import com.udacity.course3.reviews.document.Review;
+import com.udacity.course3.reviews.document.ReviewDocument;
 import com.udacity.course3.reviews.entity.Product;
+import com.udacity.course3.reviews.entity.Review;
 import com.udacity.course3.reviews.repository.ProductsRepository;
-import com.udacity.course3.reviews.repository.ReviewsRepository;
 import com.udacity.course3.reviews.service.ReviewsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,7 @@ public class ReviewsController {
         if(!productRecord.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            review.setProductId(new Long(productId));
+            review.setProduct(productRecord.get());
 
             Review newReview = this.reviewsService.save(review);
 
@@ -58,8 +58,8 @@ public class ReviewsController {
      * @return The list of reviews.
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
-    public ResponseEntity<List<Review>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
-        List<Review> reviews = this.reviewsService.findAll(new Long(productId));
+    public ResponseEntity<List<ReviewDocument>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
+        List<ReviewDocument> reviews = this.reviewsService.findAll(new Long(productId));
 
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
