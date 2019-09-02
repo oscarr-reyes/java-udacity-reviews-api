@@ -1,8 +1,11 @@
 package com.udacity.course3.reviews.service;
 
+import com.udacity.course3.reviews.document.CommentDocument;
 import com.udacity.course3.reviews.document.ReviewDocument;
+import com.udacity.course3.reviews.entity.Comment;
 import com.udacity.course3.reviews.entity.Product;
 import com.udacity.course3.reviews.entity.Review;
+import com.udacity.course3.reviews.repository.CommentsRepository;
 import com.udacity.course3.reviews.repository.ReviewsMongoRepository;
 import com.udacity.course3.reviews.repository.ReviewsRepository;
 import org.springframework.stereotype.Service;
@@ -15,10 +18,12 @@ import java.util.stream.Collectors;
 public class ReviewsService {
 	private ReviewsMongoRepository reviewsMongoRepository;
 	private ReviewsRepository reviewsRepository;
+	private CommentsRepository commentsRepository;
 
-	public ReviewsService(ReviewsMongoRepository reviewsMongoRepository, ReviewsRepository reviewsRepository) {
+	public ReviewsService(ReviewsMongoRepository reviewsMongoRepository, ReviewsRepository reviewsRepository, CommentsRepository commentsRepository) {
 		this.reviewsMongoRepository = reviewsMongoRepository;
 		this.reviewsRepository = reviewsRepository;
+		this.commentsRepository = commentsRepository;
 	}
 
 	/**
@@ -48,5 +53,17 @@ public class ReviewsService {
 		this.reviewsMongoRepository.save(reviewDocument);
 
 		return newReview;
+	}
+
+	public Comment saveComment(Comment comment) {
+		Review review = comment.getReview();
+		ReviewDocument reviewDocument = this.reviewsMongoRepository.findByMysqlId(review.getId());
+		CommentDocument newCommentDocument = new CommentDocument(comment.getText());
+
+		reviewDocument.addComment(newCommentDocument);
+
+		this.reviewsMongoRepository.save(reviewDocument);
+
+		return this.commentsRepository.save(comment);
 	}
 }
